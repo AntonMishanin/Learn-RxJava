@@ -12,6 +12,8 @@ import java.util.List;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
 public class MainActivity extends AppCompatActivity {
@@ -21,53 +23,53 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        createObservableWithJust();
-        createObservableFromIterable();
-        createObservableUsingCreate();
+
+        TestObservable testObservable = new TestObservable();
+        // testObservable.createObservableWithJust();
+        // testObservable.createObservableFromIterable();
+        // testObservable.createObservableUsingCreate();
+        //testObservable.createConnectableObservable();
+        //testObservable.createColdObservable();
+        //testObservable.onObservableError();
+        //testObservable.onObservableErrorUsingCallable();
+        //testObservable.createObservableUsingEmpty();
+        //testObservable.createObservableUsingNever();
+       // testObservable.onObservableRange();
+        //testObservable.onObservableDefer();
+       // testObservable.onObservableFromCallable();
+
+
+
+
+      //  onObserver();
     }
 
-    @SuppressLint("CheckResult")
-    private void createObservableWithJust() {
-        Observable<Integer> observable = Observable.just(1, 2, 3, 4);
-        observable.subscribe(new Consumer<Integer>() {
+    void onObserver() {
+
+        Observable<Integer> observable = Observable.just(1, 2, 3, 4, 5);
+
+        Observer<Integer> observer = new Observer<Integer>() {
             @Override
-            public void accept(Integer integer) throws Exception {
-                Log.d("tag", "createObservableWithJust: " + integer);
+            public void onSubscribe(Disposable d) {
+
             }
-        });
-    }
 
-    @SuppressLint("CheckResult")
-    private void createObservableFromIterable() {
-        List<Integer> list = new ArrayList<>();
-        list.add(1);
-        list.add(2);
-        list.add(3);
-
-        Observable<Integer> observable = Observable.fromIterable(list);
-        observable.subscribe(integer -> Log.d("tag", "createObservableFromIterable: " + integer));
-    }
-
-    @SuppressLint("CheckResult")
-    private void createObservableUsingCreate() {
-        Observable<Integer> observable = Observable.create(new ObservableOnSubscribe<Integer>() {
             @Override
-            public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
-                emitter.onNext(1);
-                emitter.onNext(2);
-                emitter.onNext(3);
-                emitter.onNext(4);
-                emitter.onNext(5);
-               // emitter.onNext(null);
-                emitter.onComplete();
+            public void onNext(Integer integer) {
+                Log.d("tag", "onNext: " + integer);
             }
-        });
 
-        observable.subscribe(
-                integer -> Log.d("tag", "createObservableUsingCreate: " + integer),
-                error -> Log.d("tag", error.getLocalizedMessage()),
-                () -> Log.d("tag", "createObservableUsingCreate: Complete")
-        );
+            @Override
+            public void onError(Throwable e) {
+                Log.d("tag", "onError: " + e.getMessage());
+            }
 
+            @Override
+            public void onComplete() {
+                Log.d("tag", "onComplete");
+            }
+        };
+
+        observable.subscribe(observer);
     }
 }
