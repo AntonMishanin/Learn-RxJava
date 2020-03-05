@@ -5,15 +5,27 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
+import io.reactivex.Maybe;
+import io.reactivex.MaybeObserver;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.observables.ConnectableObservable;
 
 public class TestObservable {
+
+    public static final String TAG = "tag";
 
     int start = 3;
     int count = 4;
@@ -147,7 +159,7 @@ public class TestObservable {
     }
 
     @SuppressLint("CheckResult")
-    void onObservableRange(){
+    void onObservableRange() {
         int start = 3;
         int count = 4;
         Observable observable = Observable.range(start, count);
@@ -158,20 +170,20 @@ public class TestObservable {
             }
         });
         count = 4;
-        observable.subscribe(item -> Log.d("tag", "onObservableRange: "+ item));
+        observable.subscribe(item -> Log.d("tag", "onObservableRange: " + item));
     }
 
-    void onObservableDefer(){
+    void onObservableDefer() {
 
         Observable observable = Observable.defer(() -> Observable.range(start, count));
 
-        observable.subscribe(item -> Log.d("tag", "onObservableDefer: "+ item));
+        observable.subscribe(item -> Log.d("tag", "onObservableDefer: " + item));
         count = 10;
         observable.subscribe(item -> Log.d("tag", "onObservableDefer: " + item));
     }
 
     @SuppressLint("CheckResult")
-    void onObservableFromCallable(){
+    void onObservableFromCallable() {
         Observable observable = Observable.fromCallable(() -> {
             Log.d("tag", "onObservableFromCallable: ");
             return getNumber();
@@ -191,8 +203,165 @@ public class TestObservable {
         });
     }
 
-    private int getNumber(){
+    private int getNumber() {
         Log.d("tag", "getNumber: ");
-        return 3/0;
+        return 3 / 0;
+    }
+
+    @SuppressLint("CheckResult")
+    void onObservableInterval() {
+        //Observable observable = Observable.interval(1, TimeUnit.SECONDS);
+        //observable.subscribe(item -> Log.d("tag", "onObservableInterval: " + item));
+
+        Observable observable = Observable.interval(1, TimeUnit.SECONDS);
+        observable.subscribe(item -> System.out.println("Observable 1: " + item));
+        pause(2000);
+        observable.subscribe(item -> System.out.println("Observable 2: " + item));
+        pause(4000);
+    }
+
+    void pause(int duration) {
+        try {
+            Thread.sleep(duration);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void createSingle() {
+        Single.just("Test String").subscribe(new SingleObserver<String>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                Log.d(TAG, "onSubscribe: ");
+            }
+
+            @Override
+            public void onSuccess(String s) {
+                Log.d(TAG, "onSuccess: " + s);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.d(TAG, "onError: ");
+            }
+        });
+    }
+
+    void createMaybe() {
+        Maybe.empty().subscribe(new MaybeObserver<Object>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                Log.d(TAG, "onSubscribe: ");
+            }
+
+            @Override
+            public void onSuccess(Object o) {
+                Log.d(TAG, "onSuccess: ");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.d(TAG, "onError: ");
+            }
+
+            @Override
+            public void onComplete() {
+                Log.d(TAG, "onComplete: ");
+            }
+        });
+    }
+
+    @SuppressLint("CheckResult")
+    void createCompletable() {
+        Completable.fromSingle(Single.just("Test")).subscribe(() -> Log.d(TAG, "createCompletable: "));
+
+        Completable.fromSingle(Single.just("Test")).subscribe(() -> {
+            Log.d(TAG, "createCompletable: ");
+            new CompletableObserver() {
+                @Override
+                public void onSubscribe(Disposable d) {
+                    Log.d(TAG, "onSubscribe: ");
+                }
+
+                @Override
+                public void onComplete() {
+                    Log.d(TAG, "onComplete: ");
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    Log.d(TAG, "onError: ");
+                }
+            };
+        });
+
+        Completable.fromSingle(Single.just("Test")).subscribe(
+                new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        Log.d(TAG, "onSubscribe: ");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d(TAG, "onComplete: ");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d(TAG, "onError: ");
+                    }
+                });
+    }
+
+    void handleDisposable() {
+        Observable observable = Observable.interval(1, TimeUnit.SECONDS);
+        Disposable disposable = observable.subscribe(o -> Log.d(TAG, "accept: " + o));
+        pause(4000);
+        disposable.dispose();
+    }
+
+    void handleDisposableInObserver() {
+        Observable<Integer> observable = Observable.just(1, 2, 3, 4, 5);
+        Observer<Integer> observer = new Observer<Integer>() {
+            Disposable disposable;
+
+            @Override
+            public void onSubscribe(Disposable d) {
+                disposable = d;
+            }
+
+            @Override
+            public void onNext(Integer integer) {
+                if(integer == 4){
+                    disposable.dispose();
+                }
+                Log.d(TAG, "onNext: " + integer);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        };
+        observable.subscribe(observer);
+    }
+
+    void onCompositeDisposable(){
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+        Observable observable = Observable.interval(1, TimeUnit.SECONDS);
+        Disposable disposable1 = observable.subscribe(m -> Log.d(TAG, "onCompositeDisposable: 1 - " + m));
+        Disposable disposable2 = observable.subscribe(m -> Log.d(TAG, "onCompositeDisposable: 2 - " + m));
+        compositeDisposable.addAll(disposable1, disposable2);
+        pause(2000);
+        compositeDisposable.delete(disposable1);
+        pause(3000);
+        compositeDisposable.dispose();
+        pause(1000);
     }
 }

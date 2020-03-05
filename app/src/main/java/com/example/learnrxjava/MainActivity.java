@@ -34,14 +34,19 @@ public class MainActivity extends AppCompatActivity {
         //testObservable.onObservableErrorUsingCallable();
         //testObservable.createObservableUsingEmpty();
         //testObservable.createObservableUsingNever();
-       // testObservable.onObservableRange();
+        // testObservable.onObservableRange();
         //testObservable.onObservableDefer();
-       // testObservable.onObservableFromCallable();
+        // testObservable.onObservableFromCallable();
+        // testObservable.onObservableInterval();
+        //testObservable.createSingle();
+        //testObservable.createMaybe();
+       // testObservable.createCompletable();
+       //testObservable.handleDisposable();
+        //testObservable.handleDisposableInObserver();
+        testObservable.onCompositeDisposable();
 
 
-
-
-      //  onObserver();
+        //  onObserver();
     }
 
     void onObserver() {
