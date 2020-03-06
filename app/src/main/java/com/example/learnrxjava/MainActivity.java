@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        TestObservable testObservable = new TestObservable();
+        //TestObservable testObservable = new TestObservable();
         // testObservable.createObservableWithJust();
         // testObservable.createObservableFromIterable();
         // testObservable.createObservableUsingCreate();
@@ -40,11 +40,20 @@ public class MainActivity extends AppCompatActivity {
         // testObservable.onObservableInterval();
         //testObservable.createSingle();
         //testObservable.createMaybe();
-       // testObservable.createCompletable();
-       //testObservable.handleDisposable();
+        // testObservable.createCompletable();
+        //testObservable.handleDisposable();
         //testObservable.handleDisposableInObserver();
-        testObservable.onCompositeDisposable();
+        //testObservable.onCompositeDisposable();
 
+        TestOperator testOperator = new TestOperator();
+        //testOperator.mapOperator();
+        //testOperator.filterOperator();
+        //testOperator.combineMapAndFilter();
+        //testOperator.takeOperator();
+        //testOperator.takeWhile();
+        //testOperator.skipOperator();
+        //testOperator.distinctOperator();
+        testOperator.distinctUntilChangedOperator();
 
         //  onObserver();
     }
