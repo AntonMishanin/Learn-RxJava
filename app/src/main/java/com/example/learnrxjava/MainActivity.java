@@ -53,7 +53,13 @@ public class MainActivity extends AppCompatActivity {
         //testOperator.takeWhile();
         //testOperator.skipOperator();
         //testOperator.distinctOperator();
-        testOperator.distinctUntilChangedOperator();
+        //testOperator.distinctUntilChangedOperator();
+        //testOperator.defaultIsEmptyOperator();
+        //testOperator.switchIsEmptyOperator();
+        //testOperator.repeatOperator();
+        //testOperator.scanOperator();
+        //testOperator.sortedOpertor();
+        testOperator.delayOperator();
 
         //  onObserver();
     }
@@ -86,4 +92,5 @@ public class MainActivity extends AppCompatActivity {
 
         observable.subscribe(observer);
     }
+
 }
